@@ -13,7 +13,6 @@ import (
 const DEFAULT_PORT = "9001"
 const DEFAULT_PATH = "assets_codenames"
 
-
 func main() {
 	if len(os.Args) > 3 {
 		fmt.Fprintf(os.Stderr, "Too many arguments\n")
@@ -29,7 +28,6 @@ func main() {
 		port = DEFAULT_PORT
 		path = DEFAULT_PATH
 	}
-
 
 	rand.Seed(time.Now().UnixNano())
 
