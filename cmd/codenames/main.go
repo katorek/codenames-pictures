@@ -7,23 +7,29 @@ import (
 	"os"
 	"time"
 
-	"github.com/banool/codenames-pictures"
+	"github.com/katorek/codenames-pictures"
 )
 
-const DEFAULT_PORT = "9000"
+const DEFAULT_PORT = "9001"
+const DEFAULT_PATH = "assets_codenames"
+
 
 func main() {
-	if len(os.Args) > 2 {
+	if len(os.Args) > 3 {
 		fmt.Fprintf(os.Stderr, "Too many arguments\n")
 		os.Exit(1)
 	}
 
 	var port string
-	if len(os.Args) == 2 {
+	var path string
+	if len(os.Args) == 3 {
 		port = os.Args[1]
+		path = os.Args[2]
 	} else {
 		port = DEFAULT_PORT
+		path = DEFAULT_PATH
 	}
+
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -31,9 +37,9 @@ func main() {
 		Server: http.Server{
 			Addr: ":" + port,
 		},
-        AssetsPath: "assets_codenames",
+		AssetsPath: path,
 	}
-	fmt.Printf("Starting server on port %s...\n", port)
+	fmt.Printf("Starting server on port %s...\nAssets path: %s\n", port, path)
 	if err := server.Start(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 	}
