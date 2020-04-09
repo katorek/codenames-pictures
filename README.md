@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/jbowens/codenames?status.svg)](https://godoc.org/github.com/jbowens/codenames)
 
-**99% of the credit belongs to [jbowens](https://github.com/jbowens) for this wonderful creation!**
+**99% of the credit belongs to [jbowens](https://github.com/jbowens) for this wonderful creation! + [banool](https://github.com/banool/)**
 
 Codenames implements a web app for generating and displaying boards for the <a href="https://en.wikipedia.org/wiki/Codenames_(board_game)">Codenames</a> board game. Generated boards are shareable and will update as words are revealed. The board can be viewed either as a spymaster or an ordinary player.
 
