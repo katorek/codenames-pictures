@@ -79,6 +79,33 @@ window.Lobby = React.createClass({
                         <p className ="intro">
                             You can use your own images using the field below. See <a href="https://github.com/banool/codenames-pictures#loading-up-images">the GitHub readme</a> for information about valid link options.
                         </p>
+                        <p>
+                            There are also modes availabble to play.
+                            <table>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Code</th>
+                                    <th>Alternative code</th>
+                                </tr>
+                                <tr>
+                                    <td>Mix - pictures + words</td>
+                                    <td><code>mix</code></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Pictures only</td>
+                                    <td><code>obrazki</code></td>
+                                    <td><code>pictures</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Words only</td>
+                                    <td><code>slowa</code></td>
+                                    <td><code>words</code></td>
+                                </tr>
+                            </table>
+                            Default mode is Mix <br/>
+                            To start specified mode paste 'Code' to input below and start game
+                        </p>
                         <input className="full" type="text" id="user-images" placeholder="Link to text file or folder of images..."
                             onChange={this.newGameImagesLinkChange} value={this.state.newGameImagesLink} />
                     </form>

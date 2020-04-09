@@ -18,8 +18,8 @@ import (
 )
 
 type Server struct {
-	Server http.Server
-    AssetsPath string
+	Server     http.Server
+	AssetsPath string
 
 	tpl    *template.Template
 	jslib  assets.Bundle
@@ -28,13 +28,15 @@ type Server struct {
 	images assets.Bundle
 	other  assets.Bundle
 
-	gameIDWords []string
+	excludeLinks []string
+	gameIDWords  []string
 
-	mu         sync.Mutex
-	games      map[string]*Game
-	imagePaths []string
-	mux        *http.ServeMux
-
+	mu            sync.Mutex
+	games         map[string]*Game
+	imagePaths    []string
+	imagePictures []string
+	imageWords    []string
+	mux           *http.ServeMux
 }
 
 func (s *Server) getGame(gameID, stateID string) (*Game, bool) {
@@ -56,6 +58,32 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 		// No link was given, use the server's default images.
 		return s.imagePaths, nil
 	}
+
+	switch imagesLink {
+	case "obrazki", "pictures":
+		{
+			return s.imagePictures, nil
+		}
+	case "slowa", "words":
+		{
+			return s.imageWords, nil
+		}
+	case "mix":
+		{
+			return s.imagePaths, nil
+		}
+	}
+
+	//sameHost := false
+	//for _, s := range s.excludeLinks {
+	//	fmt.Printf("Testing %s with %s", imagesLink, s)
+	//	if strings.Contains(imagesLink, strings.ToLower(s)) {
+	//		sameHost := true
+	//		break
+	//	} else {
+	//		fmt.Println(" -> False")
+	//	}
+	//}
 
 	fmt.Printf("Trying to use custom images from %s\n", imagesLink)
 	rs, err := http.Get(imagesLink)
@@ -298,6 +326,7 @@ func (s *Server) Start() error {
 	if err != nil {
 		return err
 	}
+	excludeLinks, err := dictionary.Load(fmt.Sprintf("%s/exclude-links.txt", s.AssetsPath))
 
 	var imagesAssetPath = fmt.Sprintf("%s/images", s.AssetsPath)
 	s.images, err = assets.Development(imagesAssetPath)
@@ -352,12 +381,23 @@ func (s *Server) Start() error {
 
 	gameIDs = dictionary.Filter(gameIDs, func(s string) bool { return len(s) > 3 })
 	s.gameIDWords = gameIDs.Words()
+	s.excludeLinks = excludeLinks.Words()
+	//s.excludeLinks = excludeLinks
 
 	s.games = make(map[string]*Game)
 	s.imagePaths = s.images.RelativePaths()
+	//s.imagePictures = s.images.RelativePaths()
+	//s.imageWords = s.images.RelativePaths()
 	for index, element := range s.imagePaths {
+		if strings.Contains(element, "pictures_") {
+			s.imagePictures = append(s.imagePictures, "images/"+element)
+		}
+		if strings.Contains(element, "words_") {
+			s.imageWords = append(s.imageWords, "images/"+element)
+		}
 		s.imagePaths[index] = "images/" + element
 	}
+
 	sort.Strings(s.imagePaths)
 	s.Server.Handler = s.mux
 
@@ -367,6 +407,7 @@ func (s *Server) Start() error {
 		}
 	}()
 	fmt.Printf("Server running!\n")
+
 	return s.Server.ListenAndServe()
 }
 

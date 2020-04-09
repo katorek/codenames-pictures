@@ -30,6 +30,13 @@ p.message.bad {
     font-family: 'Courier New', monospace;
 }
 
+table, th, td {
+    border: 1px solid black;
+    padding: 6px;
+}
+code {
+    font-size: 120%;
+}
 /*
 #available-games ul {
     margin: 0;

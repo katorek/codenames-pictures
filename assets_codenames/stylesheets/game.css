@@ -100,7 +100,7 @@
 
 .player .board .hidden-word { cursor: pointer; }
 
-.board .neutral.revealed { background: #EDE2CC; }
+.board .neutral.revealed { background: #DEFF00;  }
 
 .cell {
     width: 130px;

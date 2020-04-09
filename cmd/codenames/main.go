@@ -10,7 +10,7 @@ import (
 	"github.com/banool/codenames-pictures"
 )
 
-const DEFAULT_PORT = "9001"
+const DEFAULT_PORT = "9000"
 
 func main() {
 	if len(os.Args) > 2 {
