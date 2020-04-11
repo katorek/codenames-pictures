@@ -163,8 +163,23 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 	return nil, nil
 }
 
+//func enableCors(w *http.ResponseWriter) {
+//	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+//}
+
+func enableCors(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 // GET /game/<id>
 func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
+	enableCors(&rw, req)
+	//fmt.Println("handleRetrieveGame")
+	//fmt.Println(rw)
+	//fmt.Println(req)
+	//fmt.Println("==================")
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -196,11 +211,15 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 
 	g = newGame(gameID, imagePaths, randomState())
 	s.games[gameID] = g
+	fmt.Println("\n\tGAME")
+	fmt.Println(g)
+	fmt.Println("\tEndGAME")
 	writeGame(rw, g)
 }
 
 // POST /guess
 func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
+	enableCors(&rw, req)
 	var request struct {
 		GameID  string `json:"game_id"`
 		StateID string `json:"state_id"`
@@ -231,6 +250,7 @@ func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
 
 // POST /end-turn
 func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
+	enableCors(&rw, req)
 	var request struct {
 		GameID  string `json:"game_id"`
 		StateID string `json:"state_id"`
@@ -259,6 +279,7 @@ func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Server) handleNextGame(rw http.ResponseWriter, req *http.Request) {
+	enableCors(&rw, req)
 	var request struct {
 		GameID string `json:"game_id"`
 	}
@@ -291,6 +312,7 @@ type statsResponse struct {
 }
 
 func (s *Server) handleStats(rw http.ResponseWriter, req *http.Request) {
+	enableCors(&rw, req)
 	var inProgress int
 
 	s.mu.Lock()
@@ -365,6 +387,7 @@ func (s *Server) Start() error {
 	}
 
 	s.mux = http.NewServeMux()
+
 
 	s.mux.HandleFunc("/stats", s.handleStats)
 	s.mux.HandleFunc("/next-game", s.handleNextGame)
