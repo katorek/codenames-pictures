@@ -35,9 +35,6 @@ func main() {
 
 	if len(os.Args) == 2 {
 		properties := os.Args[1]
-		fmt.Println(os.Args)
-		fmt.Println(os.Args[0])
-		fmt.Println(os.Args[1])
 		info, err := os.Stat(properties)
 		if !os.IsNotExist(err) && !info.IsDir() {
 			file, err := os.Open(properties)
