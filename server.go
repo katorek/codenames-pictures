@@ -371,10 +371,10 @@ func (s *Server) Start() error {
 		os.Exit(1)
 	}
 
-	s.tpl, err = template.New("index").Parse(tpl)
-	if err != nil {
-		return err
-	}
+	//s.tpl, err = template.New("index").Parse(tpl)
+	//if err != nil {
+	//	return err
+	//}
 
 	s.front, err = assets.Development(fmt.Sprint("front/build"))
 	//s.locales, err = assets.Development(fmt.Sprint("front/build"))
