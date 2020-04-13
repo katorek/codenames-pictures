@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== "production") {
 
     i18n.init({
         backend: {
-            loadPath: '/assets/front/build/locales/{{lng}}/{{ns}}.json'
+            loadPath: '/locales/{{lng}}/{{ns}}.json'
         },
         fallbackLng: 'PL',
         debug: false,
