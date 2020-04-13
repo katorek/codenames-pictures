@@ -35,7 +35,7 @@ func (s *Server) handleIndex(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	tmpl, err := template.ParseFiles(path.Join("front/build", "index.html"))
+	tmpl, err := template.ParseFiles(path.Join(s.AssetsPath, "front/build", "index.html"))
 
 	if err != nil {
 		fmt.Println(err)

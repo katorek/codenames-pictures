@@ -376,7 +376,7 @@ func (s *Server) Start() error {
 	//	return err
 	//}
 
-	s.front, err = assets.Development(fmt.Sprint("front/build"))
+	s.front, err = assets.Development(fmt.Sprintf("%s/front/build", s.AssetsPath))
 	//s.locales, err = assets.Development(fmt.Sprint("front/build"))
 
 	//s.jslib, err = assets.Development(fmt.Sprintf("%s/jslib", s.AssetsPath))
@@ -398,7 +398,7 @@ func (s *Server) Start() error {
 
 	s.mux = http.NewServeMux()
 
-	s.buildPath = path.Clean("front/build")
+	s.buildPath = path.Join(s.AssetsPath, "/front/build")
 	buildURL := fmt.Sprintf("/%s/", s.buildPath)
 	fmt.Println(buildURL)
 

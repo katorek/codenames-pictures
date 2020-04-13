@@ -1,0 +1,74 @@
+{
+  "title": "Tajniacy Obrazki",
+  "lobby": {
+    "intro": "Zagraj w Tajniaków online na wielu urządzeniach na wspólnej tablicy.\nAby stworzyć grę lub dołączyć do istniejącej\ngry, wprowadź identyfikator gry i kliknij 'Graj!'.",
+    "play": "Graj!",
+    "customImages": {
+      "part1": "Możesz użyć własnych obrazków w grze dzięki polu poniżej. Zobacz ",
+      "githubLink": "poradnik na Githubie",
+      "part2": " po więcej informacji na temat różnych opcji poprawnego formatu linku."
+    },
+    "mods": {
+      "head": "Istnieją również predefiniowane tryby gry.",
+      "code": "Kod",
+      "description": "Opis",
+      "paste": "Wklej",
+      "mods": [
+        {
+          "code": "mix",
+          "description": "Obrazki + slowa"
+        },
+        {
+          "code": "obrazki",
+          "description": "Tylko obrazki"
+        },
+        {
+          "code": "slowa",
+          "description": "Tylko słowa (tylko polskie słowa dostępne)"
+        }
+      ],
+      "default": "Domyślnym trybem jest <1>mix<1>",
+      "default2": "Aby uruchomic dany tryb, wklej wybrany 'Kod' poniżej i wystartuj grę"
+    },
+    "image-link": {
+      "placeholder": "Tryb / Link do pliku graficznego lub fodleru z obrazami...",
+      "good": "Link działa, do dzieła!",
+      "bad": "Coś poszło nie tak z linkiem :( Spróbuj ponownie?"
+    },
+    "enjoying-game": "Jeśli dołączasz do gry która już istnieje, to pole zostanie zignorowane. Udanej zabawy!!!"
+  },
+  "select-lang": "Zmien jezyk",
+  "welcome": {
+    "title": "Witaj na {{framework}}",
+    "intro": "Aby rozpoczat, edytuj <1><0></0></1> i zapisz by przeladowac."
+  },
+  "game": {
+    "player": "Zgadujący",
+    "spymaster": "Szef",
+    "next-game": "Nowa gra (nowe obrazki)",
+    "share-link": "Wyślij ten link znajomym: ",
+    "loading": "Ładowanie",
+    "settings": {
+      "title": "USTAWIENIA",
+      "options": {
+        "colorBlind": "Tryb dla daltonisty",
+        "expandOnMouseOver": "Powiększ po najechaniu myszką",
+        "fitImagesToDiv": "Rozciągnij obrazki do kwadratu"
+      }
+    },
+    "teams": {
+      "turn": {
+        "end": {
+          "red": "Koniec tury czerwonych",
+          "blue": "Koniec tury niebieskich"
+        },
+        "red": "Tura czerwonych",
+        "blue": "Tura niebieskich"
+      },
+      "winning": {
+        "red": "Czerwoni wygrali!",
+        "blue": "Niebiescy wygrali!"
+      }
+    }
+  }
+}

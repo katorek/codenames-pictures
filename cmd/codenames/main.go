@@ -21,7 +21,7 @@ type Yml struct {
 func DefaultSettings() Yml {
 	return Yml{
 		Port:      "9001",
-		AssetPath: "assets_codenames",
+		AssetPath: "assets",
 	}
 }
 
@@ -43,7 +43,7 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error unmarshalling yaml file: %v", err)
 			}
-			fmt.Println("Proeprteis file loaded\nProperties:")
+			fmt.Println("Properties file loaded:")
 			fmt.Println(yml)
 		}
 	} else {
