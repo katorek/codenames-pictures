@@ -1,0 +1,3 @@
+port: 9000
+assetPath: assets_codenames
+images: img
