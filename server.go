@@ -182,10 +182,6 @@ func enableCors(w *http.ResponseWriter, req *http.Request) {
 // GET /game/<id>
 func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 	enableCors(&rw, req)
-	fmt.Println("handleRetrieveGame")
-	//fmt.Println(rw)
-	//fmt.Println(req)
-	//fmt.Println("==================")
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -217,9 +213,6 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 
 	g = newGame(gameID, imagePaths, randomState())
 	s.games[gameID] = g
-	fmt.Println("\n\tGAME")
-	fmt.Println(g)
-	fmt.Println("\tEndGAME")
 	writeGame(rw, g)
 }
 
