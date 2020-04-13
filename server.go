@@ -364,36 +364,22 @@ func (s *Server) Start() error {
 		os.Exit(1)
 	}
 
-	//s.tpl, err = template.New("index").Parse(tpl)
-	//if err != nil {
-	//	return err
-	//}
+	s.static, err = assets.Development(fmt.Sprintf("%s/front/build/static", s.AssetsPath))
+	if err != nil {
+		return err
+	}
 
-	s.front, err = assets.Development(fmt.Sprintf("%s/front/build", s.AssetsPath))
-	//s.locales, err = assets.Development(fmt.Sprint("front/build"))
+	s.locales, err = assets.Development(fmt.Sprintf("%s/front/build/locales", s.AssetsPath))
+	if err != nil {
+		return err
+	}
 
-	//s.jslib, err = assets.Development(fmt.Sprintf("%s/jslib", s.AssetsPath))
-	//if err != nil {
-	//	return err
-	//}
-	//s.js, err = assets.Development(fmt.Sprintf("%s/javascript", s.AssetsPath))
-	//if err != nil {
-	//	return err
-	//}
-	//s.css, err = assets.Development(fmt.Sprintf("%s/stylesheets", s.AssetsPath))
-	//if err != nil {
-	//	return err
-	//}
-	//s.other, err = assets.Development(fmt.Sprintf("%s/other", s.AssetsPath))
-	//if err != nil {
-	//	return err
-	//}
+	s.other, err = assets.Development(fmt.Sprintf("%s/other", s.AssetsPath))
+	if err != nil {
+		return err
+	}
 
 	s.mux = http.NewServeMux()
-
-	s.buildPath = path.Join(s.AssetsPath, "/front/build")
-	buildURL := fmt.Sprintf("/%s/", s.buildPath)
-	fmt.Println(buildURL)
 
 	s.mux.HandleFunc("/stats", s.handleStats)
 	s.mux.HandleFunc("/next-game", s.handleNextGame)
@@ -401,15 +387,13 @@ func (s *Server) Start() error {
 	s.mux.HandleFunc("/guess", s.handleGuess)
 	s.mux.HandleFunc("/game/", s.handleRetrieveGame)
 
-	//fs := http.FileServer(http.Dir(s.buildPath))
-	//s.mux.Handle("/js/lib/", http.StripPrefix("/js/lib/", s.jslib))
-	//s.mux.Handle("/js/", http.StripPrefix("/js/", s.js))
 	//s.mux.Handle("/css/", http.StripPrefix("/css/", s.css))
 	s.mux.Handle("/images/", http.StripPrefix("/images/", s.images))
-	//s.mux.Handle("/other/", http.StripPrefix("/other/", s.other))
+	s.mux.Handle("/other/", http.StripPrefix("/other/", s.other))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, http.FileServer(http.Dir(s.buildPath))))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
-	s.mux.Handle(buildURL, http.StripPrefix(buildURL, s.front))
+	s.mux.Handle("/static/", http.StripPrefix("/static/", s.static))
+	s.mux.Handle("/locales/", http.StripPrefix("/locales/", s.locales))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, s.front))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
 	//s.mux.Handle(buildURL, http.StripPrefix("/static/", fs))
