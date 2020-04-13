@@ -12,31 +12,25 @@ import 'react-flags-select/css/react-flags-select.css';
 //OR import sass module
 import 'react-flags-select/scss/react-flags-select.scss';
 
-//https://react.i18next.com/guides/quick-start#translate-your-content
-
 
 class AppCo extends React.Component {
 
     constructor(props) {
         super(props);
-        //asl
-        console.log('AppCo constructor');
         this.state = this.getInitialState();
-        console.log(props);
-        console.log(this.state);
         this.gameSelected = this.gameSelected.bind(this);
     }
 
     getInitialState = () => {
         let path = document.location.pathname.slice(1);
-        if (path) {
-            return {gameID: path}
-        }
         if (document.location.hash) {
             return {gameID: document.location.hash.slice(1)};
         }
         if (window.selectedGameID) {
             return {gameID: window.selectedGameID}
+        }
+        if (path) {
+            return {gameID: path}
         }
         return {gameID: null};
     };

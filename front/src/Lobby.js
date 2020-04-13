@@ -4,8 +4,6 @@ import {Trans, withTranslation} from "react-i18next";
 import './Lobby.css'
 import PropTypes from 'prop-types';
 
-// default withTranslation()(ImageLinkStatusComponent);
-
 class ImageLinkStatusComponent extends Component {
     render() {
         const { t } = this.props;
@@ -24,15 +22,8 @@ class ImageLinkStatusComponent extends Component {
 
 const ImageLinkStatus = withTranslation()(ImageLinkStatusComponent);
 
-
-let endpoint = 'http://localhost:9000';
-
 class Lobby extends Component {
 
-    // const [state, setState] = useReducer(
-    //     (state, newState) => ({...state, ...newState}),
-    //     {gameID: '', gameSelected: ''}
-    // );
 
     getInitialState = () => {
         return {
@@ -68,7 +59,6 @@ class Lobby extends Component {
         ).then(game => {
             if (process.env.NODE_ENV !== "production") {
                 game = game.data;
-                // console.log(game);
             }
             this.setState({
                 newGameName: '',
@@ -87,7 +77,6 @@ class Lobby extends Component {
 
 
     updateText(text) {
-        // this.state.ap
         this.setState({
             newGameImagesLink: text,
         })
@@ -100,131 +89,6 @@ class Lobby extends Component {
     }
 
     //
-    // componentDidMount() {
-    //     this.getTask();
-    // }
-    //
-    // onChange = event => {
-    //     this.setState({
-    //         [event.target.name]: event.target.value
-    //     });
-    // };
-    //
-    // onSubmit = () => {
-    //     let { task } = this.state;
-    //     // console.log("pRINTING task", this.state.task);
-    //     if (task) {
-    //         Api
-    //             .post(
-    //                 endpoint + "/api/task",
-    //                 {
-    //                     task
-    //                 },
-    //                 {
-    //                     headers: {
-    //                         "Content-Type": "application/x-www-form-urlencoded"
-    //                     }
-    //                 }
-    //             )
-    //             .then(res => {
-    //                 this.getTask();
-    //                 this.setState({
-    //                     task: ""
-    //                 });
-    //                 console.log(res);
-    //             });
-    //     }
-    // };
-    //
-    // getTask = () => {
-    //     Api.get(endpoint + "/api/task").then(res => {
-    //         console.log(res);
-    //         if (res.data) {
-    //             this.setState({
-    //                 items: res.data.map(item => {
-    //                     let color = "yellow";
-    //
-    //                     if (item.status) {
-    //                         color = "green";
-    //                     }
-    //                     return (
-    //                         <Card key={item._id} color={color} fluid>
-    //                             <Card.Content>
-    //                                 <Card.Header textAlign="left">
-    //                                     <div style={{ wordWrap: "break-word" }}>{item.task}</div>
-    //                                 </Card.Header>
-    //
-    //                                 <Card.Meta textAlign="right">
-    //                                     <Icon
-    //                                         name="check circle"
-    //                                         color="green"
-    //                                         onClick={() => this.updateTask(item._id)}
-    //                                     />
-    //                                     <span style={{ paddingRight: 10 }}>Done</span>
-    //                                     <Icon
-    //                                         name="undo"
-    //                                         color="yellow"
-    //                                         onClick={() => this.undoTask(item._id)}
-    //                                     />
-    //                                     <span style={{ paddingRight: 10 }}>Undo</span>
-    //                                     <Icon
-    //                                         name="delete"
-    //                                         color="red"
-    //                                         onClick={() => this.deleteTask(item._id)}
-    //                                     />
-    //                                     <span style={{ paddingRight: 10 }}>Delete</span>
-    //                                 </Card.Meta>
-    //                             </Card.Content>
-    //                         </Card>
-    //                     );
-    //                 })
-    //             });
-    //         } else {
-    //             this.setState({
-    //                 items: []
-    //             });
-    //         }
-    //     });
-    // };
-    //
-    // updateTask = id => {
-    //     Api
-    //         .put(endpoint + "/api/task/" + id, {
-    //             headers: {
-    //                 "Content-Type": "application/x-www-form-urlencoded"
-    //             }
-    //         })
-    //         .then(res => {
-    //             console.log(res);
-    //             this.getTask();
-    //         });
-    // };
-    //
-    // undoTask = id => {
-    //     Api
-    //         .put(endpoint + "/api/undoTask/" + id, {
-    //             headers: {
-    //                 "Content-Type": "application/x-www-form-urlencoded"
-    //             }
-    //         })
-    //         .then(res => {
-    //             console.log(res);
-    //             this.getTask();
-    //         });
-    // };
-    //
-    // deleteTask = id => {
-    //     Api
-    //         .delete(endpoint + "/api/deleteTask/" + id, {
-    //             headers: {
-    //                 "Content-Type": "application/x-www-form-urlencoded"
-    //             }
-    //         })
-    //         .then(res => {
-    //             console.log(res);
-    //             this.getTask();
-    //         });
-    // };
     render() {
         const {t} = this.props;
 
@@ -236,7 +100,7 @@ class Lobby extends Component {
                             {t('lobby.intro')}
                         </p>
                         <input type="text" id="game-name" autoFocus
-                               onChange={this.newGameTextChange} value={this.state.newGameName || 'test'}/>
+                               onChange={this.newGameTextChange} value={this.state.newGameName || ''}/>
                         <button onClick={this.handleNewGame}>{t('lobby.play')}</button>
                         <p className="intro">
                             {t('lobby.customImages.part1')}
@@ -286,31 +150,6 @@ class Lobby extends Component {
             </div>
         );
 
-        // return (
-        //     <div>
-        //         <div className="row">
-        //             <Header className="header" as="h2">
-        //                 {t('a')}
-        //             </Header>
-        //         </div>
-        //         <div className="row">
-        //             <Form onSubmit={this.onSubmit}>
-        //                 <Input
-        //                     type="text"
-        //                     name="task"
-        //                     onChange={this.onChange}
-        //                     value={this.state.task}
-        //                     fluid
-        //                     placeholder="Create Task"
-        //                 />
-        //                 {/* <Button >Create Task</Button> */}
-        //             </Form>
-        //         </div>
-        //         <div className="row">
-        //             <Card.Group>{this.state.items}</Card.Group>
-        //         </div>
-        //     </div>
-        // );
     }
 }
 

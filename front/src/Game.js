@@ -23,11 +23,7 @@ class GameComponent extends Component{
 
     constructor(props) {
         super(props);
-        console.log('GameComponent constructor');
-        // this.i =
         this.state = this.getInitialState();
-        console.log(props);
-        console.log(this.state);
     }
     //
     getDefaultSettings = () => {
@@ -35,7 +31,6 @@ class GameComponent extends Component{
         settingToggles.forEach(function(s) {
 	    settings[s.setting] = s.defaultValue;
         });
-        console.log(settings);
         return settings;
     };
 
@@ -288,7 +283,5 @@ GameComponent.propTypes = {
     mode: string,
     codemaster: bool,
 };
-
-// const ImageLinkStatus = withTranslation()(ImageLinkStatusComponent);
 
 export default withTranslation()(GameComponent)

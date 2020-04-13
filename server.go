@@ -21,18 +21,22 @@ type Server struct {
 	Server     http.Server
 	AssetsPath string
 
-	tpl    *template.Template
-	jslib  assets.Bundle
-	js     assets.Bundle
-	css    assets.Bundle
-	images assets.Bundle
-	other  assets.Bundle
+	tpl     *template.Template
+	jslib   assets.Bundle
+	js      assets.Bundle
+	css     assets.Bundle
+	images  assets.Bundle
+	other   assets.Bundle
+	static  assets.Bundle
+	locales assets.Bundle
+	front   assets.Bundle
 
 	excludeLinks []string
 	gameIDWords  []string
 
-	buildPath     string
-	buildURL      string
+	buildPath string
+	buildURL  string
+
 	mu            sync.Mutex
 	games         map[string]*Game
 	imagePaths    []string
@@ -371,22 +375,26 @@ func (s *Server) Start() error {
 	if err != nil {
 		return err
 	}
-	s.jslib, err = assets.Development(fmt.Sprintf("%s/jslib", s.AssetsPath))
-	if err != nil {
-		return err
-	}
-	s.js, err = assets.Development(fmt.Sprintf("%s/javascript", s.AssetsPath))
-	if err != nil {
-		return err
-	}
-	s.css, err = assets.Development(fmt.Sprintf("%s/stylesheets", s.AssetsPath))
-	if err != nil {
-		return err
-	}
-	s.other, err = assets.Development(fmt.Sprintf("%s/other", s.AssetsPath))
-	if err != nil {
-		return err
-	}
+
+	s.front, err = assets.Development(fmt.Sprint("front/build"))
+	//s.locales, err = assets.Development(fmt.Sprint("front/build"))
+
+	//s.jslib, err = assets.Development(fmt.Sprintf("%s/jslib", s.AssetsPath))
+	//if err != nil {
+	//	return err
+	//}
+	//s.js, err = assets.Development(fmt.Sprintf("%s/javascript", s.AssetsPath))
+	//if err != nil {
+	//	return err
+	//}
+	//s.css, err = assets.Development(fmt.Sprintf("%s/stylesheets", s.AssetsPath))
+	//if err != nil {
+	//	return err
+	//}
+	//s.other, err = assets.Development(fmt.Sprintf("%s/other", s.AssetsPath))
+	//if err != nil {
+	//	return err
+	//}
 
 	s.mux = http.NewServeMux()
 
@@ -400,7 +408,7 @@ func (s *Server) Start() error {
 	s.mux.HandleFunc("/guess", s.handleGuess)
 	s.mux.HandleFunc("/game/", s.handleRetrieveGame)
 
-	fs := http.FileServer(http.Dir(s.buildPath))
+	//fs := http.FileServer(http.Dir(s.buildPath))
 	//s.mux.Handle("/js/lib/", http.StripPrefix("/js/lib/", s.jslib))
 	//s.mux.Handle("/js/", http.StripPrefix("/js/", s.js))
 	//s.mux.Handle("/css/", http.StripPrefix("/css/", s.css))
@@ -408,7 +416,9 @@ func (s *Server) Start() error {
 	//s.mux.Handle("/other/", http.StripPrefix("/other/", s.other))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, http.FileServer(http.Dir(s.buildPath))))
 	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
-	s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
+	s.mux.Handle(buildURL, http.StripPrefix(buildURL, s.front))
+	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, s.front))
+	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
 	//s.mux.Handle(buildURL, http.StripPrefix("/static/", fs))
 	//s.mux.Handle(buildURL, http.StripPrefix("/css/", fs))
 	//s.mux.Handle(buildURL, http.StripPrefix("/js/", fs))
