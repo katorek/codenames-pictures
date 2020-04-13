@@ -210,7 +210,7 @@ window.Game = React.createClass({
         return (
             <div id="game-view" className={(this.state.codemaster ? "codemaster" : "player") + this.extraClasses()}>
                 <div id="share">
-                  Send this link to friends: <a className="url" href={window.location.href}>{window.location.href}</a>
+                    {t('game.sharelink')}<a className="url" href={window.location.href}>{window.location.href}</a>
                 </div>
                 <div id="status-line" className={statusClass}>
                     <div id="status" className="status-text">{status}</div>

@@ -68,7 +68,7 @@ class Lobby extends Component {
         ).then(game => {
             if (process.env.NODE_ENV !== "production") {
                 game = game.data;
-                console.log(game);
+                // console.log(game);
             }
             this.setState({
                 newGameName: '',
