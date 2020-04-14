@@ -60,9 +60,6 @@ func (s *Server) getGame(gameID, stateID string) (*Game, bool) {
 }
 
 func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]string, error) {
-	enableCors(&rw)
-
-	fmt.Printf("getImagePaths: %s\n", imagesLink)
 	if imagesLink == "" {
 		// No link was given, use the server's default images.
 		return s.imagePaths, nil
@@ -85,17 +82,6 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 			return s.imagePaths, nil
 		}
 	}
-
-	//sameHost := false
-	//for _, s := range s.excludeLinks {
-	//	fmt.Printf("Testing %s with %s", imagesLink, s)
-	//	if strings.Contains(imagesLink, strings.ToLower(s)) {
-	//		sameHost := true
-	//		break
-	//	} else {
-	//		fmt.Println(" -> False")
-	//	}
-	//}
 
 	fmt.Printf("Trying to use custom images from %s\n", imagesLink)
 	rs, err := http.Get(imagesLink)
@@ -175,16 +161,8 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 	return nil, nil
 }
 
-func enableCors(w *http.ResponseWriter) {
-	//(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	//(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	//(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Access-Control-Allow-Headers, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-Requested-With")
-}
-
 // GET /game/<id>
 func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
-	//fmt.Println("---handleRetrieveGame---\t" + req.URL.String())
-	enableCors(&rw)
 
 	var request struct {
 		ImageLink string `json:"newGameImagesLink"`
@@ -200,8 +178,6 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 			http.Error(rw, "Error decoding query string: "+err.Error(), 400)
 			return
 		}
-		fmt.Printf("%s\t%+v\n", req.Method, request)
-
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -219,13 +195,11 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 	//imagePaths, err := s.getImagePaths(rw, request.imageLink)
 	imagePaths, err := s.getImagePaths(rw, request.ImageLink)
 	if err != nil {
-		fmt.Printf("Could not load in custom images\n")
-		http.Error(rw, "Unknown error encountered with custom images", 400)
+		http.Error(rw, "Unknown error encountered with custom images: "+err.Error(), 400)
 		return
 	}
 
 	if len(imagePaths) < 20 {
-		fmt.Printf("Insufficient images in custom source\n")
 		http.Error(rw, "Insufficient images (20 needed) available in custom source", 400)
 		return
 	}
@@ -237,8 +211,6 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 
 // POST /guess
 func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw)
-
 	fmt.Println("==========================")
 	fmt.Println(req)
 	fmt.Println(req.Body)
@@ -274,7 +246,6 @@ func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
 
 // POST /end-turn
 func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw)
 	var request struct {
 		GameID  string `json:"game_id"`
 		StateID string `json:"state_id"`
@@ -303,7 +274,6 @@ func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Server) handleNextGame(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw)
 	var request struct {
 		GameID string `json:"game_id"`
 	}
@@ -336,7 +306,6 @@ type statsResponse struct {
 }
 
 func (s *Server) handleStats(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw)
 	var inProgress int
 
 	s.mu.Lock()
@@ -412,36 +381,18 @@ func (s *Server) Start() error {
 	s.mux.HandleFunc("/api/guess", s.handleGuess)
 	s.mux.HandleFunc("/game/", s.handleRetrieveGame)
 
-	//s.mux.Handle("/css/", http.StripPrefix("/css/", s.css))
 	s.mux.Handle("/images/", http.StripPrefix("/images/", s.images))
 	s.mux.Handle("/other/", http.StripPrefix("/other/", s.other))
-	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, http.FileServer(http.Dir(s.buildPath))))
-	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
 	s.mux.Handle("/static/", http.StripPrefix("/static/", s.static))
 	s.mux.Handle("/locales/", http.StripPrefix("/locales/", s.locales))
-	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, s.front))
-	//s.mux.Handle(buildURL, http.StripPrefix(buildURL, fs))
-	//s.mux.Handle(buildURL, http.StripPrefix("/static/", fs))
-	//s.mux.Handle(buildURL, http.StripPrefix("/css/", fs))
-	//s.mux.Handle(buildURL, http.StripPrefix("/js/", fs))
-	//s.mux.HandleFunc("/", Handler(buildPath, ))
 	s.mux.HandleFunc("/", s.handleIndex)
-
-	//buildHandler := http.FileServer(http.Dir("front/build"))
-	//s.mux.Handle("/", buildHandler)
-
-	//staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir("front/build/static")))
-	//s.mux.Handle("/static/", staticHandler)
 
 	gameIDs = dictionary.Filter(gameIDs, func(s string) bool { return len(s) > 3 })
 	s.gameIDWords = gameIDs.Words()
 	s.excludeLinks = excludeLinks.Words()
-	//s.excludeLinks = excludeLinks
 
 	s.games = make(map[string]*Game)
 	s.imagePaths = s.images.RelativePaths()
-	//s.imagePictures = s.images.RelativePaths()
-	//s.imageWords = s.images.RelativePaths()
 	for index, element := range s.imagePaths {
 		if strings.Contains(element, "pictures") {
 			s.imagePictures = append(s.imagePictures, "images/"+element)
@@ -453,6 +404,8 @@ func (s *Server) Start() error {
 	}
 
 	sort.Strings(s.imagePaths)
+	sort.Strings(s.imageWords)
+	sort.Strings(s.imagePictures)
 	s.Server.Handler = s.mux
 
 	go func() {
@@ -482,49 +435,3 @@ func writeJSON(rw http.ResponseWriter, resp interface{}) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(j)
 }
-
-type PreData struct {
-	SelectedGameID      string
-	AutogeneratedGameID string
-}
-
-//func Handler(buildPath string, preData PreData) http.HandlerFunc {
-//	tmpl, err := template.ParseFiles(path.Join("templates", "index.html"))
-//
-//	dir, id := filepath.Split(req.URL.Path)
-//	if dir != "" && dir != "/" {
-//		http.NotFound(rw, req)
-//		//return
-//	}
-//
-//	autogeneratedID := ""
-//	for {
-//		autogeneratedID = strings.ToLower(s.gameIDWords[rand.Intn(len(s.gameIDWords))])
-//		if _, ok := s.games[autogeneratedID]; !ok {
-//			break
-//		}
-//	}
-//
-//	if err != nil {
-//		return func(res http.ResponseWriter, req *http.Request) {
-//			http.Error(res, err.Error(), http.StatusInternalServerError)
-//		}
-//	}
-//
-//	data, err := NewViewData(buildPath, preData)
-//
-//	if err != nil {
-//		return func(res http.ResponseWriter, req *http.Request) {
-//			http.Error(res, err.Error(), http.StatusInternalServerError)
-//		}
-//	}
-//
-//	return func(res http.ResponseWriter, req *http.Request) {
-//		if err := tmpl.Execute(res, templateParameters{
-//			SelectedGameID:      data.SelectedGameID,
-//			AutogeneratedGameID: data.AutogeneratedGameID,
-//		}); err != nil {
-//			http.Error(res, err.Error(), http.StatusInternalServerError)
-//		}
-//	}
-//}

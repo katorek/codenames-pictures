@@ -167,7 +167,6 @@ func (g *Game) CurrentTeam() Team {
 }
 
 func newGame(id string, imagePaths []string, state GameState) *Game {
-	fmt.Println("New game: " + id)
 	rnd := rand.New(rand.NewSource(state.Seed))
 	game := &Game{
 		ID:           id,

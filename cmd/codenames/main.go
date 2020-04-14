@@ -44,37 +44,11 @@ func main() {
 				log.Fatalf("Error unmarshalling yaml file: %v", err)
 			}
 			fmt.Println("Properties file loaded:")
-			fmt.Println(yml)
 		}
 	} else {
-		fmt.Println("Properties file not specified\nSetting defaults:\n")
-		fmt.Println(yml)
+		fmt.Println("Properties file not specified. Setting defaults:\n")
 	}
-
-	//info, err := os.Stat(PROPERTIES)
-	//if os.IsExist(err) && !info.IsDir() {
-	//	file, err := os.Open(PROPERTIES)
-	//	data, err := ioutil.ReadAll(file)
-	//	err = yaml.Unmarshal([]byte(data), &yml)
-	//	if err != nil {
-	//		log.Fatalf("Error unmarshalling yaml file: %v", err)
-	//	}
-	//	fmt.Println("Proeprteis file loaded\nProperties:\n")
-	//	fmt.Println(yml)
-	//} else {
-	//	fmt.Println("No properties file in path\nSetting defaults:\n")
-	//	fmt.Println(yml)
-	//}
-
-	//var port string
-	//var path string
-	//if len(os.Args) == 3 {
-	//	port = os.Args[1]
-	//	path = os.Args[2]
-	//} else {
-	//	port = DEFAULT_PORT
-	//	path = DEFAULT_PATH
-	//}
+	fmt.Printf("%+v\n", yml)
 
 	rand.Seed(time.Now().UnixNano())
 
