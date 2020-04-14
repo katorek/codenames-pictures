@@ -20,7 +20,7 @@ type Yml struct {
 
 func DefaultSettings() Yml {
 	return Yml{
-		Port:      "9001",
+		Port:      "9000",
 		AssetPath: "assets",
 	}
 }

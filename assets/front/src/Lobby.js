@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 class ImageLinkStatusComponent extends Component {
     render() {
-        const { t } = this.props;
+        const {t} = this.props;
         if (this.props.good == null) {
             return <p className="message"/>;
         }
@@ -24,12 +24,24 @@ const ImageLinkStatus = withTranslation()(ImageLinkStatusComponent);
 
 class Lobby extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            newGameName: this.props.defaultGameID,
+            selectedGame: null,
+            newGameImagesLinkGood: null,
+            newGameImagesLink: null,
+        };
+    }
+
 
     getInitialState = () => {
         return {
             newGameName: this.props.defaultGameID,
             selectedGame: null,
             newGameImagesLinkGood: null,
+            newGameImagesLink: null,
         };
     };
 
@@ -50,26 +62,30 @@ class Lobby extends Component {
         if (!this.state.newGameName) {
             return;
         }
+        console.log("handleNewGame");
+        // console.log(JSON.stringify({newGameImagesLink: this.state.newGameImagesLink}));
 
         this.setState({newGameImagesLinkGood: null});
 
         Api.post(
             '/game/' + this.state.newGameName,
-            {"newGameImagesLink": this.state.newGameImagesLink},
-        ).then(game => {
-            if (process.env.NODE_ENV !== "production") {
-                game = game.data;
+            {
+                newGameImagesLink: this.state.newGameImagesLink
             }
+        ).then(response => {
+            var game = response.data;
             this.setState({
                 newGameName: '',
                 selectedGame: game,
                 newGameImagesLinkGood: true,
-                newGameImagesLink: '',
+                newGameImagesLink: this.state.newGameImagesLink,
+            }, () => {
+                if (this.props.gameSelected) {
+                    this.props.gameSelected(game);
+                }
             });
 
-            if (this.props.gameSelected) {
-                this.props.gameSelected(game);
-            }
+
         }).catch(() => {
             this.setState({newGameImagesLinkGood: false});
         });
@@ -80,12 +96,6 @@ class Lobby extends Component {
         this.setState({
             newGameImagesLink: text,
         })
-    }
-
-    constructor(props) {
-        super(props);
-
-        this.state = this.getInitialState();
     }
 
     //
@@ -134,7 +144,7 @@ class Lobby extends Component {
                             </tr>
                             </tbody>
                         </table>
-                        <br />
+                        <br/>
                         <p><Trans i18nKey={"lobby.mods.default"}>Default mode is <strong>mix</strong></Trans>
                             <br/>
                             {t('lobby.mods.default2')}

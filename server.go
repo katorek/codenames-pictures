@@ -60,6 +60,8 @@ func (s *Server) getGame(gameID, stateID string) (*Game, bool) {
 }
 
 func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]string, error) {
+	enableCors(&rw)
+
 	fmt.Printf("getImagePaths: %s\n", imagesLink)
 	if imagesLink == "" {
 		// No link was given, use the server's default images.
@@ -173,25 +175,37 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 	return nil, nil
 }
 
-//func enableCors(w *http.ResponseWriter) {
-//	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-//}
-
-func enableCors(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+func enableCors(w *http.ResponseWriter) {
+	//(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	//(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	//(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Access-Control-Allow-Headers, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-Requested-With")
 }
 
 // GET /game/<id>
 func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
+	//fmt.Println("---handleRetrieveGame---\t" + req.URL.String())
+	enableCors(&rw)
+
+	var request struct {
+		ImageLink string `json:"newGameImagesLink"`
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	enableCors(&rw, req)
 
-	err := req.ParseForm()
-	if err != nil {
-		http.Error(rw, "Error decoding query string", 400)
+	if strings.Contains(strings.ToLower(req.Method), "post") {
+		decoder := json.NewDecoder(req.Body)
+		if err := decoder.Decode(&request); err != nil {
+			fmt.Println(err)
+			http.Error(rw, "Error decoding query string: "+err.Error(), 400)
+			return
+		}
+		fmt.Printf("%s\t%+v\n", req.Method, request)
+
+	}
+
+	if err := req.ParseForm(); err != nil {
+		http.Error(rw, "Error decoding query string: "+err.Error(), 400)
 		return
 	}
 
@@ -202,7 +216,8 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	imagePaths, err := s.getImagePaths(rw, req.Form.Get("newGameImagesLink"))
+	//imagePaths, err := s.getImagePaths(rw, request.imageLink)
+	imagePaths, err := s.getImagePaths(rw, request.ImageLink)
 	if err != nil {
 		fmt.Printf("Could not load in custom images\n")
 		http.Error(rw, "Unknown error encountered with custom images", 400)
@@ -222,7 +237,13 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 
 // POST /guess
 func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw, req)
+	enableCors(&rw)
+
+	fmt.Println("==========================")
+	fmt.Println(req)
+	fmt.Println(req.Body)
+	fmt.Println(req.Form)
+
 	var request struct {
 		GameID  string `json:"game_id"`
 		StateID string `json:"state_id"`
@@ -253,7 +274,7 @@ func (s *Server) handleGuess(rw http.ResponseWriter, req *http.Request) {
 
 // POST /end-turn
 func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw, req)
+	enableCors(&rw)
 	var request struct {
 		GameID  string `json:"game_id"`
 		StateID string `json:"state_id"`
@@ -282,7 +303,7 @@ func (s *Server) handleEndTurn(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Server) handleNextGame(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw, req)
+	enableCors(&rw)
 	var request struct {
 		GameID string `json:"game_id"`
 	}
@@ -315,7 +336,7 @@ type statsResponse struct {
 }
 
 func (s *Server) handleStats(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw, req)
+	enableCors(&rw)
 	var inProgress int
 
 	s.mu.Lock()
@@ -385,10 +406,10 @@ func (s *Server) Start() error {
 
 	s.mux = http.NewServeMux()
 
-	s.mux.HandleFunc("/stats", s.handleStats)
-	s.mux.HandleFunc("/next-game", s.handleNextGame)
-	s.mux.HandleFunc("/end-turn", s.handleEndTurn)
-	s.mux.HandleFunc("/guess", s.handleGuess)
+	s.mux.HandleFunc("/api/stats", s.handleStats)
+	s.mux.HandleFunc("/api/next-game", s.handleNextGame)
+	s.mux.HandleFunc("/api/end-turn", s.handleEndTurn)
+	s.mux.HandleFunc("/api/guess", s.handleGuess)
 	s.mux.HandleFunc("/game/", s.handleRetrieveGame)
 
 	//s.mux.Handle("/css/", http.StripPrefix("/css/", s.css))

@@ -92,13 +92,18 @@ class GameComponent extends Component{
 
         Api.get(refreshURL).then((resp) => {
             let data = resp.data;
-            console.log(data);
+            // console.log(data);
             if (this.state.game && data.created_at !== this.state.game.created_at) {
                 this.setState({codemaster: false});
             }
             this.setState({game: data});
         });
-        setTimeout(this.refresh, 3000);
+        if(process.env.NODE_ENV !== 'production') {
+            console.log("Refreshing !")
+            setTimeout(this.refresh, 10*3000);
+        }else {
+            setTimeout(this.refresh, 3000);
+        }
     };
 
     toggleRole = (e, role) => {
@@ -117,7 +122,7 @@ class GameComponent extends Component{
         if (this.state.game.winning_team) {
             return; // ignore if game is over
         }
-        Api.post('/guess', JSON.stringify({
+        Api.post('/api/guess', JSON.stringify({
             game_id: this.state.game.id,
             state_id: this.state.game.state_id,
             index: idx,
@@ -133,7 +138,6 @@ class GameComponent extends Component{
 
     remaining = (color) =>  {
         var count = 0;
-        console.log(this.state);
         for (var i = 0; i < this.state.game.revealed.length; i++) {
             if (this.state.game.revealed[i]) {
                 continue;
@@ -146,7 +150,7 @@ class GameComponent extends Component{
     };
 
     endTurn = () =>  {
-        Api.post('/end-turn', JSON.stringify({
+        Api.post('/api/end-turn', JSON.stringify({
             game_id: this.state.game.id,
             state_id: this.state.game.state_id,
         }), (g) => { this.setState({game: g}); });
@@ -154,7 +158,7 @@ class GameComponent extends Component{
 
     nextGame = (e) =>  {
         e.preventDefault();
-        Api.post('/next-game', JSON.stringify({game_id: this.state.game.id}),
+        Api.post('/api/next-game', JSON.stringify({game_id: this.state.game.id}),
               (g) => { this.setState({game: g, codemaster: false}) });
     };
 
