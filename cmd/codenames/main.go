@@ -2,42 +2,63 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/katorek/codenames-pictures"
+	"gopkg.in/yaml.v3"
 )
 
-const DEFAULT_PORT = "9001"
-const DEFAULT_PATH = "assets_codenames"
+type Yml struct {
+	Port      string `yaml:"port"`
+	AssetPath string `yaml:"assetPath"`
+}
+
+func DefaultSettings() Yml {
+	return Yml{
+		Port:      "9000",
+		AssetPath: "assets",
+	}
+}
 
 func main() {
-	if len(os.Args) > 3 {
+	if len(os.Args) > 2 {
 		fmt.Fprintf(os.Stderr, "Too many arguments\n")
 		os.Exit(1)
 	}
 
-	var port string
-	var path string
-	if len(os.Args) == 3 {
-		port = os.Args[1]
-		path = os.Args[2]
+	yml := DefaultSettings()
+
+	if len(os.Args) == 2 {
+		properties := os.Args[1]
+		info, err := os.Stat(properties)
+		if !os.IsNotExist(err) && !info.IsDir() {
+			file, err := os.Open(properties)
+			data, err := ioutil.ReadAll(file)
+			err = yaml.Unmarshal([]byte(data), &yml)
+			if err != nil {
+				log.Fatalf("Error unmarshalling yaml file: %v", err)
+			}
+			fmt.Println("Properties file loaded:")
+		}
 	} else {
-		port = DEFAULT_PORT
-		path = DEFAULT_PATH
+		fmt.Println("Properties file not specified. Setting defaults:\n")
 	}
+	fmt.Printf("%+v\n", yml)
 
 	rand.Seed(time.Now().UnixNano())
 
 	server := &codenames.Server{
 		Server: http.Server{
-			Addr: ":" + port,
+			Addr: ":" + yml.Port,
 		},
-		AssetsPath: path,
+		AssetsPath: yml.AssetPath,
 	}
-	fmt.Printf("Starting server on port %s...\nAssets path: %s\n", port, path)
+
 	if err := server.Start(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 	}

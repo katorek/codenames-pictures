@@ -98,9 +98,11 @@ type Game struct {
 	CreatedAt    time.Time `json:"created_at"`
 	StartingTeam Team      `json:"starting_team"`
 	WinningTeam  *Team     `json:"winning_team,omitempty"`
-	Images       []string  `json:"-"`
-	RoundImages  []string  `json:"words"`
-	Layout       []Team    `json:"layout"`
+	Round        int       `json:"round"`
+	//NotYetUsedImages []string  `json:"-"`
+	Images      []string `json:"-"`
+	RoundImages []string `json:"words"`
+	Layout      []Team   `json:"layout"`
 }
 
 func (g *Game) checkWinningCondition() {
@@ -166,27 +168,40 @@ func (g *Game) CurrentTeam() Team {
 	return g.StartingTeam.Other()
 }
 
-func newGame(id string, imagePaths []string, state GameState) *Game {
+func remove20(s []string, i int) []string {
+	s[len(s)-1], s[i] = s[i], s[len(s)-1]
+	return s[:len(s)-1]
+}
+
+func remove20Elements(s []string) []string {
+	if len(s) < 20 {
+		return nil
+	}
+	return s[20:]
+}
+
+func newGame(id string, imagePaths []string, state GameState, round int) *Game {
 	rnd := rand.New(rand.NewSource(state.Seed))
 	game := &Game{
 		ID:           id,
 		CreatedAt:    time.Now(),
 		StartingTeam: Team(rnd.Intn(2)) + Red,
 		Images:       imagePaths,
+		Round:        round,
 		RoundImages:  make([]string, 0, imagesPerGame),
 		Layout:       make([]Team, 0, imagesPerGame),
 		GameState:    state,
 	}
 
-	// Pick 25 random images.
-	used := map[string]struct{}{}
-	for len(used) < imagesPerGame {
-		w := imagePaths[rnd.Intn(len(imagePaths))]
-		if _, ok := used[w]; !ok {
-			used[w] = struct{}{}
-			game.RoundImages = append(game.RoundImages, w)
-		}
+	if round == 0 || (round)*20 > (len(imagePaths)) {
+		game.Round = 0
+		rnd.Shuffle(len(game.Images), func(i, j int) { game.Images[i], game.Images[j] = game.Images[j], game.Images[i] })
 	}
+
+	for i := 0; i < imagesPerGame; i++ {
+		game.RoundImages = append(game.RoundImages, game.Images[(i+20*round)%(len(game.Images))])
+	}
+	//game.NotYetUsedImages = remove20Elements(game.NotYetUsedImages)
 
 	// Pick a random permutation of team assignments.
 	var teamAssignments []Team
