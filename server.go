@@ -54,7 +54,7 @@ func (s *Server) getGame(gameID, stateID string) (*Game, bool) {
 	if !ok {
 		return nil, false
 	}
-	g = newGame(gameID, s.imagePaths, state)
+	g = newGame(gameID, s.imagePaths, state, g.Round)
 	s.games[gameID] = g
 	return g, true
 }
@@ -204,7 +204,7 @@ func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	g = newGame(gameID, imagePaths, randomState())
+	g = newGame(gameID, imagePaths, randomState(), 0)
 	s.games[gameID] = g
 	writeGame(rw, g)
 }
@@ -296,7 +296,7 @@ func (s *Server) handleNextGame(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// Create a new game with the same ID and source images from the past game but with a random state.
-	g = newGame(request.GameID, g.Images, randomState())
+	g = newGame(request.GameID, g.Images, randomState(), g.Round+1)
 	s.games[request.GameID] = g
 	writeGame(rw, g)
 }
