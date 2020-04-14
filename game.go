@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 )
 
@@ -194,15 +193,13 @@ func newGame(id string, imagePaths []string, state GameState, round int) *Game {
 		GameState:    state,
 	}
 
-	if round == 0 || (round+1)*20 > (len(imagePaths)-1) {
+	if round == 0 || (round)*20 > (len(imagePaths)) {
 		game.Round = 0
 		rnd.Shuffle(len(game.Images), func(i, j int) { game.Images[i], game.Images[j] = game.Images[j], game.Images[i] })
 	}
 
 	for i := 0; i < imagesPerGame; i++ {
-		fmt.Printf("%d\t", (i+20*round)%(len(game.Images)-1))
-		fmt.Println(strings.Split(game.Images[(i+20*round)%(len(game.Images)-1)], "/")[2])
-		game.RoundImages = append(game.RoundImages, game.Images[(i+20*round)%(len(game.Images)-1)])
+		game.RoundImages = append(game.RoundImages, game.Images[(i+20*round)%(len(game.Images))])
 	}
 	//game.NotYetUsedImages = remove20Elements(game.NotYetUsedImages)
 
