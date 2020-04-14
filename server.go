@@ -60,6 +60,7 @@ func (s *Server) getGame(gameID, stateID string) (*Game, bool) {
 }
 
 func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]string, error) {
+	fmt.Printf("getImagePaths: %s\n", imagesLink)
 	if imagesLink == "" {
 		// No link was given, use the server's default images.
 		return s.imagePaths, nil
@@ -68,14 +69,17 @@ func (s *Server) getImagePaths(rw http.ResponseWriter, imagesLink string) ([]str
 	switch imagesLink {
 	case "obrazki", "pictures":
 		{
+			fmt.Println("s.imagePictures")
 			return s.imagePictures, nil
 		}
 	case "slowa", "words":
 		{
+			fmt.Println("s.imageWords")
 			return s.imageWords, nil
 		}
 	case "mix":
 		{
+			fmt.Println("ss.imagePaths")
 			return s.imagePaths, nil
 		}
 	}
@@ -181,9 +185,9 @@ func enableCors(w *http.ResponseWriter, req *http.Request) {
 
 // GET /game/<id>
 func (s *Server) handleRetrieveGame(rw http.ResponseWriter, req *http.Request) {
-	enableCors(&rw, req)
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	enableCors(&rw, req)
 
 	err := req.ParseForm()
 	if err != nil {
@@ -418,10 +422,10 @@ func (s *Server) Start() error {
 	//s.imagePictures = s.images.RelativePaths()
 	//s.imageWords = s.images.RelativePaths()
 	for index, element := range s.imagePaths {
-		if strings.Contains(element, "pictures_") {
+		if strings.Contains(element, "pictures") {
 			s.imagePictures = append(s.imagePictures, "images/"+element)
 		}
-		if strings.Contains(element, "words_") {
+		if strings.Contains(element, "words") {
 			s.imageWords = append(s.imageWords, "images/"+element)
 		}
 		s.imagePaths[index] = "images/" + element
