@@ -23,14 +23,14 @@ class AppCo extends React.Component {
 
     getInitialState = () => {
         let path = document.location.pathname.slice(1);
+        if (path) {
+            return {gameID: path}
+        }
         if (document.location.hash) {
             return {gameID: document.location.hash.slice(1)};
         }
         if (window.selectedGameID) {
             return {gameID: window.selectedGameID}
-        }
-        if (path) {
-            return {gameID: path}
         }
         return {gameID: null};
     };
