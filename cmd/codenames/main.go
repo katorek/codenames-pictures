@@ -44,6 +44,8 @@ func main() {
 				log.Fatalf("Error unmarshalling yaml file: %v", err)
 			}
 			fmt.Println("Properties file loaded:")
+		} else {
+			fmt.Println("Error during processing properties file: " + os.Args[1])
 		}
 	} else {
 		fmt.Println("Properties file not specified. Setting defaults:\n")
